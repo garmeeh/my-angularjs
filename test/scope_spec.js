@@ -91,5 +91,45 @@ describe("Scope", function() {
       expect(oldValueGiven).toBe(123);
     });
 
+    it("may have watchers that omit the listener function", function(){
+      var watchFn = jasmine.createSpy().and.returnValue('something');
+      scope.$watch(watchFn);
+
+      scope.$digest();
+
+      expect(watchFn).toHaveBeenCalled();
+    });
+
+    it("triggers chained watchers in the same digest", function(){
+      scope.name = 'Gary';
+
+      scope.$watch(
+        function(scope){ return scope.nameUpper; },
+        function(newValue, oldValue, scope) {
+          if(newValue){
+            scope.intial = newValue.substring(0, 1) + '.';
+          }
+        }
+      );
+
+      scope.$watch(
+        function(scope) { return scope.name; },
+        function(newValue, oldValue, scope){
+          if(newValue){
+            scope.nameUpper = newValue.toUpperCase();
+          }
+        }
+      );
+
+      scope.$digest();
+
+      expect(scope.intial).toBe('G.');
+
+      scope.name = 'Bob';
+      scope.$digest();
+      expect(scope.intial).toBe('B.');
+
+    });
+
   });
 });
