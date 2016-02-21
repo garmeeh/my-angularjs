@@ -277,6 +277,26 @@ describe("Scope", function() {
 
     });
 
+    it("executes $evalAsync'ed function later in the same cycle", function(){
+      scope.aValue = [1, 2, 3];
+      scope.asyncEvaluated = false;
+      scope.asyncEvaluatedImediately = false;
+
+      scope.$watch(
+        function(scope){ return scope.aValue;},
+        function(newValue, oldValue, scope){
+          scope.$evalAsync(function(scope){
+            scope.asyncEvaluated = true;
+          });
+          scope.asyncEvaluatedImediately = scope.asyncEvaluated;
+        }
+      );
+
+      scope.$digest();
+      expect(scope.asyncEvaluated).toBe(true);
+      expect(scope.asyncEvaluatedImediately).toBe(false);
+    });
+
 
   });
 });
