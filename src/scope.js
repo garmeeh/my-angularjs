@@ -54,7 +54,7 @@ Scope.prototype.$$digestOnce = function() {
   return dirty;
 };
 
-Scope.prototype.$$areEqual = function(newValue, oldValue, valueEq){
+Scope.prototype.$$areEqual = function(newValue, oldValue, valueEq) {
   if(valueEq){
     return _.isEqual(newValue, oldValue);
   } else{
@@ -65,6 +65,14 @@ Scope.prototype.$$areEqual = function(newValue, oldValue, valueEq){
 
 Scope.prototype.$eval = function(expr, locals) {
   return expr(this, locals);
+};
+
+Scope.prototype.$apply = function(expr) {
+  try {
+    return this.$eval(expr);
+  } finally {
+    this.$digest();
+  }
 };
 
 module.exports = Scope;
